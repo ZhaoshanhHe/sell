@@ -51,8 +51,8 @@ public class ProductServiceImplTest {
     @Test
     public void save() {
         ProductInfo productInfo=new ProductInfo();
-        productInfo.setProductId("123457");
-        productInfo.setProductName("神舟");
+        productInfo.setProductId("12345789");
+        productInfo.setProductName("神舟游戏本");
         BigDecimal bigDecimal=new BigDecimal(2300);
         productInfo.setProductPrice(bigDecimal);
         productInfo.setProductStock(100);
