@@ -9,6 +9,8 @@ import com.imooc.dataObject.OrderMaster;
 import com.imooc.dataObject.ProductInfo;
 import com.imooc.dto.CartDTO;
 import com.imooc.dto.OrderDTO;
+import com.imooc.enums.OrderStatusEnum;
+import com.imooc.enums.PayStatusEnum;
 import com.imooc.enums.ResultEnum;
 import com.imooc.exception.SellException;
 import com.imooc.service.OrderService;
@@ -22,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new SellException(ResultEnum.PRODUCT_NOT_EXIST);
             }
             //2.计算订单总价
-            orderAmount =  orderDetail.getProductPrice().multiply(new BigDecimal(orderDetail.getProductQuantity())).add(orderAmount);
+            orderAmount =  productInfo.getProductPrice().multiply(new BigDecimal(orderDetail.getProductQuantity())).add(orderAmount);
             //订单详情入库
             orderDetail.setDetailId(KeyUtil.genUniqueKey());
             orderDetail.setOrderId(orderId);
@@ -63,9 +64,11 @@ public class OrderServiceImpl implements OrderService {
 
         //3.写入订单数据库(orderMaster和orderDetail)
         OrderMaster orderMaster=new OrderMaster();
+        BeanUtils.copyProperties(orderDTO,orderMaster);
         orderMaster.setOrderId(orderId);
         orderMaster.setOrderAmount(orderAmount);
-        BeanUtils.copyProperties(orderDTO,orderMaster);
+        orderMaster.setOrderStatus(OrderStatusEnum.NEW.getCode());
+        orderMaster.setPayStatus(PayStatusEnum.WAIT.getCode());
         orderMasterDao.save(orderMaster);
         //4.扣库存
         List<CartDTO> cartDTOList= orderDTO.getOrderDetailList().stream().map(e->new CartDTO(e.getProductId(),e.getProductQuantity())
