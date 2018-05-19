@@ -1,5 +1,7 @@
 package com.imooc.dataObject;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.imooc.Utils.serializer.Date2LongSerializer;
 import com.imooc.enums.OrderStatusEnum;
 import com.imooc.enums.PayStatusEnum;
 import lombok.Data;
@@ -29,7 +31,11 @@ public class OrderMaster {
     private BigDecimal orderAmount;
     private Integer orderStatus=OrderStatusEnum.NEW.getCode();
     private Integer payStatus=PayStatusEnum.WAIT.getCode();
+
+    @JsonSerialize(using = Date2LongSerializer.class)
     private Date createTime;
+
+    @JsonSerialize(using = Date2LongSerializer.class)
     private Date updateTime;
 
 }
