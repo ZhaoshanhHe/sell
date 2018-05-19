@@ -7,6 +7,7 @@ import com.imooc.dto.OrderDTO;
 import com.imooc.enums.ResultEnum;
 import com.imooc.exception.SellException;
 import com.imooc.form.OrderForm;
+import com.imooc.service.BuyerService;
 import com.imooc.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,9 @@ import java.util.Map;
 public class BuyerController {
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private BuyerService buyerService;
     //创建订单
     @RequestMapping("create")
     public ResultVO<Map<String,String>> create(@Valid OrderForm orderForm, BindingResult bindingResult){
@@ -70,20 +74,14 @@ public class BuyerController {
     //订单详情
     @RequestMapping("/detail")
     public ResultVO<OrderDTO> detail(@RequestParam("openid") String openid,@RequestParam("orderId") String orderId){
-        //TODO 不安全的做法，改进
-        OrderDTO orderDTO = orderService.findOne(orderId);
-        if(!orderDTO.getBuyerOpenid().equalsIgnoreCase(openid)){
-
-        }
+        OrderDTO orderDTO = buyerService.findOrderOne(openid, orderId);
         return ResultVOUtil.success(orderDTO);
     }
 
     //订单取消
     @RequestMapping("/cancel")
     public ResultVO cancel(@RequestParam("openid") String openid,@RequestParam("orderId") String orderId){
-        //TODO 不安全 改进
-        OrderDTO orderDTO = orderService.findOne(orderId);
-        orderService.cancel(orderDTO);
+        buyerService.cancelOrder(openid,orderId);
         return ResultVOUtil.success();
     }
 }
